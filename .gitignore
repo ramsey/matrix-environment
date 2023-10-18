@@ -1,0 +1,5 @@
+*.db
+*.pid
+.env
+/database/.data
+/synapse/.data

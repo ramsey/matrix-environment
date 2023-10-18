@@ -1,0 +1,55 @@
+services:
+
+  database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: "synapse"
+      POSTGRES_PASSWORD: "${DATABASE_PASS:?must provide a database password}"
+      POSTGRES_DB: "synapse"
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    volumes:
+      - type: bind
+        source: ./database/docker-healthcheck
+        target: /usr/local/bin/docker-healthcheck
+        read_only: true
+      - type: bind
+        source: "${DATABASE_DATA_PATH:?must provide a path to store database data on the host}"
+        target: /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "docker-healthcheck"]
+      interval: 30s
+      timeout: 30s
+      start_period: 40s
+      start_interval: 5s
+      retries: 3
+    restart: unless-stopped
+
+  synapse:
+    image: matrixdotorg/synapse:latest
+    environment:
+      SYNAPSE_CONFIG_DIR: /data/synapse
+      SYNAPSE_CONFIG_PATH: /data/synapse/homeserver.yaml
+      SYNAPSE_WORKER: "synapse.app.homeserver"
+    expose:
+      - 8008
+    ports:
+      - 8008:8008
+    volumes:
+      - type: bind
+        source: "${SYNAPSE_DATA_PATH:?must provide a path to store synapse data on the host}"
+        target: /data
+    depends_on:
+      - database
+    healthcheck:
+      test: ["CMD", "curl", "-fSs", "http://localhost:8008/health"]
+      interval: 15s
+      timeout: 5s
+      start_period: 5s
+      start_interval: 0s
+      retries: 3
+    restart: unless-stopped

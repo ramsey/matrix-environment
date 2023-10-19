@@ -1,3 +1,7 @@
+{
+	email ${CADDY_SSL_EMAIL_ADDRESS}
+}
+
 http://localhost:8888 {
 	reverse_proxy /health http://synapse:8008
 	reverse_proxy /version http://element

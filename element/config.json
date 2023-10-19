@@ -1,5 +1,4 @@
 {
-    "default_server_name": "${SYNAPSE_SERVER_NAME}",
     "default_server_config": {
         "m.homeserver": {
             "base_url": "https://matrix.${SYNAPSE_SERVER_NAME}",

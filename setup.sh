@@ -49,6 +49,10 @@ mkdir -p "${SYNAPSE_DATA_PATH}/synapse/media_store"
 mkdir -p "${ELEMENT_DATA_PATH}/element"
 mkdir -p "${CADDY_DATA_PATH}/caddy"
 
+chmod a+w "${SYNAPSE_DATA_PATH}/synapse"
+chmod a+w "${SYNAPSE_DATA_PATH}/synapse/log"
+chmod a+w "${SYNAPSE_DATA_PATH}/synapse/media_store"
+
 if [[ ! -e "${SYNAPSE_DATA_PATH}/synapse/homeserver.yaml" ]]; then
   echo "Copying synapse/homeserver.yaml to ${SYNAPSE_DATA_PATH}/synapse/homeserver.yaml"
   envsubst < "./synapse/homeserver.yaml" > "${SYNAPSE_DATA_PATH}/synapse/homeserver.yaml"

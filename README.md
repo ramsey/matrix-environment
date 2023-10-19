@@ -31,7 +31,7 @@ The host machine or VM requires:
    3. `example.com` is your *primary domain* that forms the domain portion of your Matrix username (i.e., `@yourname:example.com`), where you'll add `.well-known` files to tell other Matrix servers how to find your account and homeserver; this domain can be served from the same server, but it's not served by the environment defined by this repository—most likely, you'll serve it from a different server, and it might be your primary website
 6. Add the `.well-known` files to your primary domain (see below)
 7. Make sure your firewall allows ports 80, 443, and 8448; for example, on Ubuntu, do: `ufw allow www && ufw allow https && ufw allow 8448`
-8. Start this environment with containers daemonized: `docker-compose up -d`
+8. Start this environment with containers daemonized: `docker compose up -d`
 
 ## `.well-known` files for Matrix
 

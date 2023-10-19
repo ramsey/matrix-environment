@@ -56,7 +56,7 @@ services:
     depends_on:
       - synapse
     healthcheck:
-      test: ["CMD", "curl", "-fSs", "http://localhost/version"]
+      test: ["CMD", "wget", "-qO-", "http://localhost/version"]
       interval: 15s
       timeout: 5s
       start_period: 5s

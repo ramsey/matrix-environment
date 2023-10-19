@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eo pipefail
 
-synapse_response="$(curl -fSs http://localhost:8888/health)"
-element_response="$(curl -fSs http://localhost:8888/version)"
+synapse_response="$(wget -qO- http://localhost:8888/health)"
+element_response="$(wget -qO- http://localhost:8888/version)"
 
 if [[ $synapse_response == "OK" && $element_response == "1."* ]]; then
   exit 0

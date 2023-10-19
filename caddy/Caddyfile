@@ -1,0 +1,24 @@
+http://localhost:8888 {
+	reverse_proxy /health http://synapse:8008
+	reverse_proxy /version http://element
+}
+
+matrix.${SYNAPSE_SERVER_NAME} {
+	reverse_proxy /_matrix/* http://synapse:8008
+	reverse_proxy /_synapse/client/* http://synapse:8008
+}
+
+matrix.${SYNAPSE_SERVER_NAME}:8448 {
+	reverse_proxy http://synapse:8008
+}
+
+chat.${SYNAPSE_SERVER_NAME} {
+	header {
+		X-Frame-Options "SAMEORIGIN"
+		X-XSS-Protection "1; mode=block"
+		X-Content-Type-Options "nosniff"
+		X-Robots-Tag "noindex, noarchive, nofollow"
+	}
+
+	reverse_proxy http://element
+}

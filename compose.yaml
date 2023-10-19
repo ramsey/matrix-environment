@@ -8,10 +8,6 @@ services:
       POSTGRES_DB: "synapse"
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
       PGDATA: /var/lib/postgresql/data/pgdata
-    expose:
-      - 5432
-    ports:
-      - 5432:5432
     volumes:
       - type: bind
         source: ./database/docker-healthcheck
@@ -35,18 +31,56 @@ services:
       SYNAPSE_CONFIG_DIR: /data/synapse
       SYNAPSE_CONFIG_PATH: /data/synapse/homeserver.yaml
       SYNAPSE_WORKER: "synapse.app.homeserver"
-    expose:
-      - 8008
-    ports:
-      - 8008:8008
     volumes:
       - type: bind
-        source: "${SYNAPSE_DATA_PATH:?must provide a path to store synapse data on the host}"
+        source: "${SYNAPSE_DATA_PATH:?must provide a path to store Synapse data on the host}"
         target: /data
     depends_on:
       - database
     healthcheck:
       test: ["CMD", "curl", "-fSs", "http://localhost:8008/health"]
+      interval: 15s
+      timeout: 5s
+      start_period: 5s
+      start_interval: 0s
+      retries: 3
+    restart: unless-stopped
+
+  element:
+    image: vectorim/element-web:latest
+    volumes:
+      - type: bind
+        source: "${ELEMENT_DATA_PATH:?must provide a path to store Element data on the host}/element/config.json"
+        target: /app/config.json
+        read_only: true
+    depends_on:
+      - synapse
+    healthcheck:
+      test: ["CMD", "curl", "-fSs", "http://localhost/version"]
+      interval: 15s
+      timeout: 5s
+      start_period: 5s
+      start_interval: 0s
+      retries: 3
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2.7-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - type: bind
+        source: "${CADDY_DATA_PATH:?must provide a path to store Caddy data on the host}/caddy/Caddyfile"
+        target: /etc/caddy/Caddyfile
+        read_only: true
+    depends_on:
+      - element
+    healthcheck:
+      test: ["CMD", "docker-healthcheck"]
       interval: 15s
       timeout: 5s
       start_period: 5s

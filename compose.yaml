@@ -74,7 +74,10 @@ services:
       - NET_ADMIN
     volumes:
       - type: bind
-        source: "${CADDY_DATA_PATH:?must provide a path to store Caddy data on the host}/caddy/Caddyfile"
+        source: "${CADDY_DATA_PATH:?must provide a path to store Caddy data on the host}"
+        target: /data
+      - type: bind
+        source: "${CADDY_DATA_PATH}/caddy/Caddyfile"
         target: /etc/caddy/Caddyfile
         read_only: true
     depends_on:
@@ -83,7 +86,7 @@ services:
       test: ["CMD", "docker-healthcheck"]
       interval: 15s
       timeout: 5s
-      start_period: 5s
-      start_interval: 0s
+      start_period: 120s
+      start_interval: 5s
       retries: 3
     restart: unless-stopped

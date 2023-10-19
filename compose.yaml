@@ -20,7 +20,7 @@ services:
       test: ["CMD", "docker-healthcheck"]
       interval: 30s
       timeout: 30s
-      start_period: 40s
+      start_period: 60s
       start_interval: 5s
       retries: 3
     restart: unless-stopped
@@ -41,8 +41,8 @@ services:
       test: ["CMD", "curl", "-fSs", "http://localhost:8008/health"]
       interval: 15s
       timeout: 5s
-      start_period: 5s
-      start_interval: 0s
+      start_period: 30s
+      start_interval: 5s
       retries: 3
     restart: unless-stopped
 
@@ -53,14 +53,18 @@ services:
         source: "${ELEMENT_DATA_PATH:?must provide a path to store Element data on the host}/element/config.json"
         target: /app/config.json
         read_only: true
+      - type: bind
+        source: "${ELEMENT_DATA_PATH}/element/config.json"
+        target: "/app/config.chat.${SYNAPSE_SERVER_NAME}.json"
+        read_only: true
     depends_on:
       - synapse
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost/version"]
       interval: 15s
       timeout: 5s
-      start_period: 5s
-      start_interval: 0s
+      start_period: 30s
+      start_interval: 5s
       retries: 3
     restart: unless-stopped
 
@@ -73,6 +77,10 @@ services:
     cap_add:
       - NET_ADMIN
     volumes:
+      - type: bind
+        source: ./caddy/docker-healthcheck
+        target: /usr/local/bin/docker-healthcheck
+        read_only: true
       - type: bind
         source: "${CADDY_DATA_PATH:?must provide a path to store Caddy data on the host}"
         target: /data

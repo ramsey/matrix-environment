@@ -19,7 +19,7 @@ handlers:
   file:
     class: logging.handlers.TimedRotatingFileHandler
     formatter: precise
-    filename: /data/synapse/log/homeserver.log
+    filename: /data/log/homeserver.log
     when: midnight
     backupCount: 3  # Does not include the current log file.
     encoding: utf8

@@ -28,13 +28,17 @@ services:
   synapse:
     image: matrixdotorg/synapse:latest
     environment:
-      SYNAPSE_CONFIG_DIR: /data/synapse
-      SYNAPSE_CONFIG_PATH: /data/synapse/homeserver.yaml
+      SYNAPSE_CONFIG_DIR: /data
+      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
       SYNAPSE_WORKER: "synapse.app.homeserver"
     volumes:
       - type: bind
-        source: "${SYNAPSE_DATA_PATH:?must provide a path to store Synapse data on the host}"
+        source: "${SYNAPSE_DATA_PATH:?must provide a path to store Synapse data on the host}/synapse"
         target: /data
+      - type: bind
+        source: "${IRC_BRIDGE_DATA_PATH}/irc-bridge/appservice-registration-irc.yaml"
+        target: /appservice/appservice-registration-irc.yaml
+        read_only: true
     depends_on:
       - database
     healthcheck:
@@ -82,10 +86,7 @@ services:
         target: /usr/local/bin/docker-healthcheck
         read_only: true
       - type: bind
-        source: "${CADDY_DATA_PATH:?must provide a path to store Caddy data on the host}"
-        target: /data
-      - type: bind
-        source: "${CADDY_DATA_PATH}/caddy/Caddyfile"
+        source: "${CADDY_DATA_PATH:?must provide a path to store Caddy data on the host}/caddy/Caddyfile"
         target: /etc/caddy/Caddyfile
         read_only: true
     depends_on:
@@ -97,4 +98,29 @@ services:
       start_period: 120s
       start_interval: 5s
       retries: 3
+    restart: unless-stopped
+
+  irc-bridge:
+    image: matrixdotorg/matrix-appservice-irc:latest
+    expose:
+      - 113
+      - 7700
+      - 8090
+    ports:
+      - "113:113"
+    volumes:
+      - type: bind
+        source: "${IRC_BRIDGE_DATA_PATH:?must provide a path to IRC bridge configuration on the host}/irc-bridge/config.yaml"
+        target: /data/config.yaml
+        read_only: true
+      - type: bind
+        source: "${IRC_BRIDGE_DATA_PATH}/irc-bridge/appservice-registration-irc.yaml"
+        target: /data/appservice-registration-irc.yaml
+        read_only: true
+      - type: bind
+        source: "${IRC_BRIDGE_DATA_PATH}/irc-bridge/passkey.pem"
+        target: /data/passkey.pem
+        read_only: true
+    depends_on:
+      - synapse
     restart: unless-stopped

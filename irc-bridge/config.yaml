@@ -1,0 +1,137 @@
+homeserver:
+  url: "http://synapse:8008"
+  media_url: "https://matrix.${SYNAPSE_SERVER_NAME}"
+  dropMatrixMessagesAfterSecs: 300 # 5 minutes
+  domain: "${SYNAPSE_SERVER_NAME}"
+  enablePresence: true
+  bindPort: 8090
+  bindHostname: 0.0.0.0
+
+ircService:
+  servers:
+
+    #
+    # IRC Bridge configuration for Libera.Chat
+    #
+    libera.chat:
+      name: "Libera.Chat"
+      additionalAddresses: ["irc.libera.chat"]
+      onlyAdditionalAddresses: true
+      networkId: "libera"
+      icon: "mxc://matrix.org/jzagdUSMWyVvQXEwNKOlieie"
+      port: 6697
+      ssl: true
+      sslselfsign: false
+      sasl: true
+      allowExpiredCerts: false
+      sendConnectionMessages: true
+      quitDebounce:
+        enabled: false
+      modePowerMap:
+        o: 50
+        v: 1
+      botConfig:
+        enabled: true
+        nick: "${IRC_BRIDGE_BOT_DISPLAY_NAME}"
+        username: "${IRC_BRIDGE_BOT_USERNAME}"
+        password: "${IRC_BRIDGE_BOT_PASS}"
+        joinChannelsIfNoUsers: true
+      privateMessages:
+        enabled: true
+        federate: true
+      dynamicChannels:
+        enabled: true
+        createAlias: true
+        published: true
+        useHomeserverDirectory: true
+        joinRule: public
+        federate: true
+        aliasTemplate: "$CHANNEL"
+      membershipLists:
+        enabled: true
+        floodDelayMs: 10000
+        global:
+          ircToMatrix:
+            initial: true
+            incremental: true
+            requireMatrixJoined: true
+          matrixToIrc:
+            initial: true
+            incremental: true
+        ignoreIdleUsersOnStartup:
+          enabled: true
+          idleForHours: 720
+      mappings: {}
+      matrixClients:
+        userTemplate: "@$NICK"
+        displayName: "$NICK (Libera)"
+        joinAttempts: -1
+      ircClients:
+        nickTemplate: "$DISPLAY[m]"
+        allowNickChanges: true
+        maxClients: 30
+        ipv6:
+          only: false
+        idleTimeout: 172800
+        reconnectIntervalMs: 5000
+        concurrentReconnectLimit: 50
+        lineLimit: 3
+        userModes: "iQR"
+        realnameFormat: "mxid"
+        pingTimeoutMs: 600000
+        pingRateMs: 60000
+        kickOn:
+          channelJoinFailure: true
+          ircConnectionFailure: true
+          userQuit: true
+
+  bridgeInfoState:
+    enabled: true
+    initial: true
+  ident:
+    enabled: true
+    port: 113
+    address: "::"
+  logging:
+    level: "warn"
+    toConsole: true
+  metrics:
+    enabled: false
+  debugApi:
+    enabled: false
+    port: 11100
+  provisioning:
+    enabled: true
+    widget: true
+    requestTimeoutSeconds: 300
+    roomLimit: 50
+    apiPrefix: "/_matrix/provision"
+    ratelimit: true
+    http:
+      port: 7700
+      host: 0.0.0.0
+  passwordEncryptionKeyPath: "/data/passkey.pem"
+  matrixHandler:
+    eventCacheSize: 4096
+    shortReplyTemplate: "$NICK: $REPLY"
+    longReplyTemplate: "<$NICK> \"$ORIGINAL\" <- $REPLY"
+    shortReplyTresholdSeconds: 300
+  ircHandler:
+    mapIrcMentionsToMatrix: "on"
+    powerLevelGracePeriod: 1000
+  permissions:
+    '${SYNAPSE_SERVER_NAME}': admin
+  perRoomConfig:
+    enabled: true
+    lineLimitMax: 5
+
+advanced:
+  maxHttpSockets: 1000
+  maxTxnSize: 10000000
+
+sentry:
+  enabled: false
+
+database:
+  engine: "postgres"
+  connectionString: "postgres://synapse:${DATABASE_PASS}@database:5432/ircbridge"

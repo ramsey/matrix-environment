@@ -10,7 +10,7 @@
 
 server_name: "${SYNAPSE_SERVER_NAME}"
 web_client_location: "https://chat.${SYNAPSE_SERVER_NAME}/"
-pid_file: /data/synapse/homeserver.pid
+pid_file: /data/homeserver.pid
 delete_stale_devices_after: 13w
 
 listeners:
@@ -64,14 +64,14 @@ database:
 # Logging
 ################################################################################
 
-log_config: /data/synapse/log.yaml
+log_config: /data/log.yaml
 
 ################################################################################
 # Media Store
 ################################################################################
 
 enable_media_repo: true
-media_store_path: /data/synapse/media_store
+media_store_path: /data/media_store
 max_upload_size: 50M
 max_image_pixels: 32M
 dynamic_thumbnails: false
@@ -114,7 +114,7 @@ turn_allow_guests: false
 ################################################################################
 
 enable_registration: false
-registration_shared_secret_path: /data/synapse/registration_shared_secret
+registration_shared_secret_path: /data/registration_shared_secret
 allow_guest_access: false
 
 ################################################################################
@@ -131,6 +131,8 @@ report_stats: true
 ################################################################################
 
 track_puppeted_user_ips: true
+app_service_config_files:
+  - /appservice/appservice-registration-irc.yaml
 track_appservice_user_ips: true
 form_secret: "${SYNAPSE_FORM_SECRET}"
 
@@ -138,7 +140,7 @@ form_secret: "${SYNAPSE_FORM_SECRET}"
 # Signing Keys
 ################################################################################
 
-signing_key_path: /data/synapse/homeserver.signing.key
+signing_key_path: /data/homeserver.signing.key
 trusted_key_servers:
   - server_name: "matrix.org"
 suppress_key_server_warning: true

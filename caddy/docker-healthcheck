@@ -2,9 +2,8 @@
 set -eo pipefail
 
 synapse_response="$(wget -qO- http://localhost:8888/health)"
-element_response="$(wget -qO- http://localhost:8888/version)"
 
-if [[ $synapse_response == "OK" && $element_response == "1."* ]]; then
+if [[ $synapse_response == "OK" ]]; then
   exit 0
 fi
 

@@ -9,7 +9,6 @@
 ################################################################################
 
 server_name: "${SYNAPSE_SERVER_NAME}"
-web_client_location: "https://chat.${SYNAPSE_SERVER_NAME}/"
 pid_file: /data/homeserver.pid
 delete_stale_devices_after: 13w
 

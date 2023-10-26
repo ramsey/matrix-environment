@@ -36,11 +36,6 @@ if [[ -z "${SYNAPSE_SERVER_NAME}" ]]; then
   exit 1
 fi
 
-if [[ -z "${ELEMENT_DATA_PATH}" || ! -d "${ELEMENT_DATA_PATH}" ]]; then
-  echo "[ERROR] You must set ELEMENT_DATA_PATH, and this path must exist."
-  exit 1
-fi
-
 if [[ -z "${CADDY_DATA_PATH}" || ! -d "${CADDY_DATA_PATH}" ]]; then
   echo "[ERROR] You must set CADDY_DATA_PATH, and this path must exist."
   exit 1
@@ -53,7 +48,6 @@ fi
 
 mkdir -p "${SYNAPSE_DATA_PATH}/synapse/log"
 mkdir -p "${SYNAPSE_DATA_PATH}/synapse/media_store"
-mkdir -p "${ELEMENT_DATA_PATH}/element"
 mkdir -p "${CADDY_DATA_PATH}/caddy"
 mkdir -p "${IRC_BRIDGE_DATA_PATH}/irc-bridge"
 
@@ -70,11 +64,6 @@ fi
 if [[ ! -e "${SYNAPSE_DATA_PATH}/synapse/log.yaml" ]]; then
   echo "Copying synapse/log.yaml to ${SYNAPSE_DATA_PATH}/synapse/log.yaml"
   envsubst "$shell_format" < "./synapse/log.yaml" > "${SYNAPSE_DATA_PATH}/synapse/log.yaml"
-fi
-
-if [[ ! -e "${ELEMENT_DATA_PATH}/element/config.json" ]]; then
-  echo "Copying element/config.json to ${ELEMENT_DATA_PATH}/element/config.json"
-  envsubst "$shell_format" < "./element/config.json" > "${ELEMENT_DATA_PATH}/element/config.json"
 fi
 
 if [[ ! -e "${CADDY_DATA_PATH}/caddy/Caddyfile" ]]; then

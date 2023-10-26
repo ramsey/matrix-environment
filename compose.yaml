@@ -50,28 +50,6 @@ services:
       retries: 3
     restart: unless-stopped
 
-  element:
-    image: vectorim/element-web:latest
-    volumes:
-      - type: bind
-        source: "${ELEMENT_DATA_PATH:?must provide a path to store Element data on the host}/element/config.json"
-        target: /app/config.json
-        read_only: true
-      - type: bind
-        source: "${ELEMENT_DATA_PATH}/element/config.json"
-        target: "/app/config.chat.${SYNAPSE_SERVER_NAME}.json"
-        read_only: true
-    depends_on:
-      - synapse
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost/version"]
-      interval: 15s
-      timeout: 5s
-      start_period: 30s
-      start_interval: 5s
-      retries: 3
-    restart: unless-stopped
-
   caddy:
     image: caddy:2.7-alpine
     ports:
@@ -90,7 +68,7 @@ services:
         target: /etc/caddy/Caddyfile
         read_only: true
     depends_on:
-      - element
+      - synapse
     healthcheck:
       test: ["CMD", "docker-healthcheck"]
       interval: 15s
@@ -100,27 +78,27 @@ services:
       retries: 3
     restart: unless-stopped
 
-  irc-bridge:
-    image: matrixdotorg/matrix-appservice-irc:latest
-    expose:
-      - 113
-      - 7700
-      - 8090
-    ports:
-      - "113:113"
-    volumes:
-      - type: bind
-        source: "${IRC_BRIDGE_DATA_PATH:?must provide a path to IRC bridge configuration on the host}/irc-bridge/config.yaml"
-        target: /data/config.yaml
-        read_only: true
-      - type: bind
-        source: "${IRC_BRIDGE_DATA_PATH}/irc-bridge/appservice-registration-irc.yaml"
-        target: /data/appservice-registration-irc.yaml
-        read_only: true
-      - type: bind
-        source: "${IRC_BRIDGE_DATA_PATH}/irc-bridge/passkey.pem"
-        target: /data/passkey.pem
-        read_only: true
-    depends_on:
-      - synapse
-    restart: unless-stopped
+      #irc-bridge:
+      #  image: matrixdotorg/matrix-appservice-irc:latest
+      #  expose:
+      #    - 113
+      #    - 7700
+      #    - 8090
+      #  ports:
+      #    - "113:113"
+      #  volumes:
+      #    - type: bind
+      #      source: "${IRC_BRIDGE_DATA_PATH:?must provide a path to IRC bridge configuration on the host}/irc-bridge/config.yaml"
+      #      target: /data/config.yaml
+      #      read_only: true
+      #    - type: bind
+      #      source: "${IRC_BRIDGE_DATA_PATH}/irc-bridge/appservice-registration-irc.yaml"
+      #      target: /data/appservice-registration-irc.yaml
+      #      read_only: true
+      #    - type: bind
+      #      source: "${IRC_BRIDGE_DATA_PATH}/irc-bridge/passkey.pem"
+      #      target: /data/passkey.pem
+      #      read_only: true
+      #  depends_on:
+      #    - synapse
+      #  restart: unless-stopped
